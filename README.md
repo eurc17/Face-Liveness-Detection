@@ -43,6 +43,7 @@ scikit-learn==0.19.1
 tensorflow==1.6.0
 imutils==0.5.4
 scipy==1.0.0
+dlib==19.22.0
 ```
 
 ## Training
