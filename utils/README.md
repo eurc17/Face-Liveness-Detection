@@ -4,6 +4,8 @@ The utilities are for FinTech Project in NTU.
 
 ## mtcnn.py
 
+Prerequisite: [facenet-pytorch](https://github.com/timesler/facenet-pytorch)
+
 Description: Takes a folder of images and performs MTCNN face detection on each image and saves the cropped faces in each image to another directory.
 
 Usage:
