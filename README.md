@@ -18,7 +18,7 @@ The problem of detecting fake faces vs real/legitimate faces is treated as a bin
 
 ## Contents of this repository
 1. sample_liveness_data : contains the sample dataset.
-2. Face Liveness Detection -Saketh.pptx : A couple of slides that will give you information on th project and our motivation.
+2. Face Liveness Detection -Saketh.pptx : A couple of slides that will give you information on the project and our motivation.
 3. demo.py : Our demonstration script will fire up your webcam to grab frames to conduct face liveness detection in real-time.
 4. deploy.prototxt : Support file for pretrained face detector. 
 5. le.pickle : Our class label encoder.
@@ -89,8 +89,51 @@ Optional Arguments:
                         Validation Split ratio
 ```
 
+## Inference
+
+1. Download dlib shape_detector from [here](https://github.com/davisking/dlib-models/blob/master/shape_predictor_68_face_landmarks.dat.bz2).
+
+2. Decompress the downloaded file with the following command
+
+   ```bash
+   bzip2 -d shape_predictor_68_face_landmarks.dat.bz2
+   ```
+
+3. Run the following command:
+
+   ```
+   python3 demo.py -m [PATH_TO_LIVENESS_NET_MODEL] -l le.pickle -c [CONFIDENCE_THRESHOLD] -p shape_predictor_68_face_landmarks.dat -d [PATH_TO_FOLDER_CONTAINING_deploy.prototxt] -o [OUTPUT_VIDEO_PATH] -v [INPUT_VIDEO_PATH] -f [FRAME_RATE]
+   ```
+
+   Optional Arguments:
+
+   ```
+     -h, --help            show this help message and exit
+     -m MODEL, --model MODEL
+                           path to trained model
+     -l LE, --le LE        path to label encoder
+     -d DETECTOR, --detector DETECTOR
+                           path to OpenCV's deep learning face detector
+     -c CONFIDENCE, --confidence CONFIDENCE
+                           minimum probability to filter weak detections
+     -p SHAPE_PREDICTOR, --shape-predictor SHAPE_PREDICTOR
+                           path to facial landmark predictor
+     -o OUT_VIDEO_PATH, --out_video_path OUT_VIDEO_PATH
+                           path and name of output_video
+     -v VIDEO_FILE, --video_file VIDEO_FILE
+                           path to video_file
+     -f FRAME_RATE, --frame_rate FRAME_RATE
+                           frame rate of the input video
+   ```
+
+   
+
 ## Further work
 
 1. Gathering data having a larger set of ethnicity and different types of fake/spoofed photos.
 2. Adding more heuristics to team up with deep-learning.
+
+## Reference
+
+[Shape Detector Github Link](https://github.com/davisking/dlib-models)
 
