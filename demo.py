@@ -25,6 +25,12 @@ ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
 ap.add_argument("-p", "--shape-predictor", required=True,
 	     help="path to facial landmark predictor")
+ap.add_argument("-o", "--out_video_path", type=str, required=True,
+	     help="path and name of output_video")
+ap.add_argument("-v", "--video_file", type=str, default="0",
+	     help="path to video_file")
+ap.add_argument("-f", "--frame_rate", type=int, default=30,
+	     help="frame rate of the input video")
 args = vars(ap.parse_args())
 
 
@@ -81,12 +87,26 @@ detector = dlib.get_frontal_face_detector()
 #accessing the shape predictor
 predictor = dlib.shape_predictor(args["shape_predictor"])
 #starting the stream
-video_capture = cv2.VideoCapture(0)  
+if args["video_file"] == "0":
+    print("[INFO] Using camera as input.")
+    video_capture = cv2.VideoCapture(0)  
+else:
+    video_capture = cv2.VideoCapture(args["video_file"])
+    
+# Define video writer parameters
+output_name = args["out_video_path"]
+frame_rate = args["frame_rate"]
+out = None
+    
 #looping over frames
 while True:
     #checkpoint 1
     ret, frame = video_capture.read()
     if ret:
+        if out == None:
+            frame_width  = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)   # float `width`
+            frame_height = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+            out = cv2.VideoWriter(output_name,cv2.VideoWriter_fourcc('X','V','I','D'), frame_rate, (frame_width,frame_height))
         
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  
         rects = detector(gray, 0)
@@ -108,90 +128,61 @@ while True:
             #calculating blink wheneer the ear value drops down below the threshold
 	
             if ear_left < EYE_AR_THRESH:
-                
                 COUNTER_LEFT += 1
-            
             else:
-                
-                
                 if COUNTER_LEFT >= EYE_AR_CONSEC_FRAMES:
-                    
-                    
                     TOTAL_LEFT += 1  
                     print("Left eye winked") 
-                
                     COUNTER_LEFT = 0
+                    
             if ear_right < EYE_AR_THRESH:  
-                
-                
                 COUNTER_RIGHT += 1  
-
             else:
-                
                 if COUNTER_RIGHT >= EYE_AR_CONSEC_FRAMES: 
-                    
-                    
                     TOTAL_RIGHT += 1  
                     print("Right eye winked")  
                     COUNTER_RIGHT = 0
 
-
             x = TOTAL_LEFT + TOTAL_RIGHT
 
-    (h, w) = frame.shape[:2]
-    temp = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
-		(300, 300), (104.0, 177.0, 123.0))
-    net.setInput(temp)
-    detections = net.forward()
-    for i in range(0, detections.shape[2]):
-        
-        
-        confidence = detections[0, 0, i, 2]
-            
-          #staisfying the union need of veryfying through ROI and blink detection.  
-        if confidence > args["confidence"] and x>10:
-            
-            
-             
-            #detect a bounding box
-	    #take dimensions
-            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-	    #get the dimensions
-            (startX, startY, endX, endY) = box.astype("int")
+        (h, w) = frame.shape[:2]
+        temp = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,
+            (300, 300), (104.0, 177.0, 123.0))
+        net.setInput(temp)
+        detections = net.forward()
+        for i in range(0, detections.shape[2]):
+            confidence = detections[0, 0, i, 2]
+            #staisfying the union need of veryfying through ROI and blink detection.  
+            if confidence > args["confidence"] and x>10:
+                #detect a bounding box
+                box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                (startX, startY, endX, endY) = box.astype("int")
 
-			
-            startX = max(0, startX)
-            startY = max(0, startY)
-            endX = min(w, endX)
-            endY = min(h, endY)
+                startX = max(0, startX)
+                startY = max(0, startY)
+                endX = min(w, endX)
+                endY = min(h, endY)
 
-	# extract the face ROI and then preproces it in the exact
-	# same manner as our training data
-            face = frame[startY:endY, startX:endX]
-            face = cv2.resize(face, (32, 32))
-            face = face.astype("float") / 255.0
-            face = img_to_array(face)
-            face = np.expand_dims(face, axis=0)
+                # extract the face ROI and then preproces it in the exact same manner as our training data
+                face = frame[startY:endY, startX:endX]
+                face = cv2.resize(face, (32, 32))
+                face = face.astype("float") / 255.0
+                face = img_to_array(face)
+                face = np.expand_dims(face, axis=0)
 
-	#pass the model to determine the liveness
-            preds = model.predict(face)[0]
-            j = np.argmax(preds)
-            label = le.classes_[j]
+                #pass the model to determine the liveness
+                preds = model.predict(face)[0]
+                j = np.argmax(preds)
+                label = le.classes_[j]
 
-		# tag with the label
-		#tag with the bounding box
-            label = "{}: {:.4f}".format(label, preds[j])
-            cv2.putText(frame, label, (startX, startY - 10),
-				 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-            cv2.rectangle(frame, (startX, startY), (endX, endY),
-				  (0, 0, 255), 2)
- #showing the frames and waiting for the key to be pressed
-cv2.imshow("Frame", frame)
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
+                # tag with the label
+                label = "{}: {:.4f}".format(label, preds[j])
+                cv2.putText(frame, label, (startX, startY - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                cv2.rectangle(frame, (startX, startY), (endX, endY),
+                    (0, 0, 255), 2)
+    else:
         break
-cv2.destroyAllWindows()
-#vs.stop()
 
 
 

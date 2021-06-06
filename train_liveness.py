@@ -6,7 +6,8 @@ import matplotlib
 matplotlib.use("Agg")
 
 # import the necessary packages
-from pyimagesearch.livenessnet import LivenessNet
+#from pyimagesearch.livenessnet import LivenessNet
+from livenessnet import LivenessNet
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
@@ -31,13 +32,17 @@ ap.add_argument("-l", "--le", type=str, required=True,
 	help="path to label encoder")
 ap.add_argument("-p", "--plot", type=str, default="plot.png",
 	help="path to output loss/accuracy plot")
+ap.add_argument("-r", "--lr", type=float, default=1e-4, help="Initial Learning Rate")
+ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
+ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
+ap.add_argument("-v", "--validation_split", type=float, default=0.15, help="Validation Split ratio")
 args = vars(ap.parse_args())
 
 # initialize the initial learning rate, batch size, and number of
 # epochs to train for
-INIT_LR = 1e-4
-BS = 8
-EPOCHS = 50
+INIT_LR = args["lr"]
+BS = args["bs"]
+EPOCHS = args["epochs"]
 
 # grab the list of images in our dataset directory, then initialize
 # the list of data (i.e., images) and class images
@@ -70,7 +75,7 @@ labels = np_utils.to_categorical(labels, 2)
 # partition the data into training and testing splits using 75% of
 # the data for training and the remaining 25% for testing
 (trainX, testX, trainY, testY) = train_test_split(data, labels,
-	test_size=0.25, random_state=42)
+	test_size=args["validation_split"], random_state=42)
 
 # construct the training image generator for data augmentation
 aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15,
