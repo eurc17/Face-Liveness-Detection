@@ -103,15 +103,13 @@ while True:
     #checkpoint 1
     ret, frame = video_capture.read()
     if ret:
-        if out == None:
-            frame_width  = int(video_capture.get(3))   # float `width`
-            frame_height = int(video_capture.get(4))
-            print("frame size = ", frame_width, frame_height)
-            out = cv2.VideoWriter(output_name,cv2.VideoWriter_fourcc('X','V','I','D'), frame_rate, (frame_width,frame_height))
-        
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  
         rects = detector(gray, 0)
         frame = imutils.resize(frame, width=600)
+        if out == None:
+            (frame_height, frame_width) = frame.shape[:2]
+            print("frame size = ", frame_width, frame_height)
+            out = cv2.VideoWriter(output_name, cv2.VideoWriter_fourcc('X','V','I','D'), frame_rate, (frame_width,frame_height))
         for rect in rects:
             
             x = rect.left()  
@@ -182,9 +180,11 @@ while True:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 cv2.rectangle(frame, (startX, startY), (endX, endY),
                     (0, 0, 255), 2)
+        out.write(frame)
     else:
         break
-
+out.release()
+video_capture.release()
 
 
 
