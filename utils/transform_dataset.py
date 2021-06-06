@@ -14,7 +14,7 @@ def transform_dataset(label_path, fake_dir, real_dir):
         # print(path)
         # print(label)
         # print(base_name)
-        if label == 0:
+        if label == "0":
             print("cp "+path+" "+fake_dir+"/"+base_name)
             os.system("cp "+path+" "+fake_dir+"/"+base_name)
         else:
