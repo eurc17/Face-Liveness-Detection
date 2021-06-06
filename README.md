@@ -1,4 +1,7 @@
 # Face Liveness Detection
+
+Note: This is a forked version of the code.
+
 ![alt text](https://github.com/sakethbachu/Face-Liveness-Detection/blob/master/sample_liveness_data/Desc%20info/livenessg.gif "Logo Title Text 1")
 
 ---
@@ -28,6 +31,65 @@ The problem of detecting fake faces vs real/legitimate faces is treated as a bin
 ## Working flow
 ![alt text](https://github.com/sakethbachu/liveness_detection/blob/master/sample_liveness_data/Desc%20info/workflow.png "Logo Title Text 1")
 
+## Environment Setup
+
+Tested with the following python package under python 3.5.2:
+
+```
+Keras==2.1.5
+matplotlib==2.1.2
+opencv-python==4.4.0.42
+scikit-learn==0.19.1
+tensorflow==1.6.0
+imutils==0.5.4
+scipy==1.0.0
+```
+
+## Training
+
+1. Prepare the dataset with structure like the following:
+
+```
+sample_liveness_data/
+├── fake
+│   ├── 0.png
+│   ├── 1.png
+│   ├── 2.png
+│   └── ...
+└── real
+    ├── 0.png
+    ├── 1.png
+    ├── 199.png
+    ├── 2.jpg
+    └── ...
+```
+
+2. Train with the following command:
+
+```bash
+python3 train_liveness.py --dataset [PATH_TO_DATASET] --model [PATH_TO_SAVE_MODEL] --le le.pickle
+```
+
+Optional Arguments:
+
+```
+  -h, --help            show this help message and exit
+  -d DATASET, --dataset DATASET
+                        path to input dataset
+  -m MODEL, --model MODEL
+                        path to trained model
+  -l LE, --le LE        path to label encoder
+  -p PLOT, --plot PLOT  path to output loss/accuracy plot
+  -r LR, --lr LR        Initial Learning Rate
+  -b BS, --bs BS        Batch size
+  -e EPOCHS, --epochs EPOCHS
+                        Number of Training Epochs
+  -v VALIDATION_SPLIT, --validation_split VALIDATION_SPLIT
+                        Validation Split ratio
+```
+
 ## Further work
+
 1. Gathering data having a larger set of ethnicity and different types of fake/spoofed photos.
 2. Adding more heuristics to team up with deep-learning.
+
