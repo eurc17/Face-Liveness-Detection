@@ -104,8 +104,9 @@ while True:
     ret, frame = video_capture.read()
     if ret:
         if out == None:
-            frame_width  = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)   # float `width`
-            frame_height = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+            frame_width  = int(video_capture.get(3))   # float `width`
+            frame_height = int(video_capture.get(4))
+            print("frame size = ", frame_width, frame_height)
             out = cv2.VideoWriter(output_name,cv2.VideoWriter_fourcc('X','V','I','D'), frame_rate, (frame_width,frame_height))
         
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  
