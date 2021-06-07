@@ -48,10 +48,10 @@ dlib==19.22.0
 
 ## Training
 
-1. Prepare the dataset with structure like the following:
+1. Prepare the dataset training and validation with structure like the following:
 
 ```
-sample_liveness_data/
+sample_liveness_data_training/
 ├── fake
 │   ├── 0.png
 │   ├── 1.png
@@ -68,26 +68,31 @@ sample_liveness_data/
 2. Train with the following command:
 
 ```bash
-python3 train_liveness.py --dataset [PATH_TO_DATASET] --model [PATH_TO_SAVE_MODEL] --le le.pickle
+python3 train_liveness.py --d [PATH_TO_TRAINING_DATASET] -dv [PATH_TO_VAL_DATASET] --model [PATH_TO_SAVE_MODEL]
 ```
 
 Optional Arguments:
 
 ```
   -h, --help            show this help message and exit
-  -d DATASET, --dataset DATASET
-                        path to input dataset
+  -d TRAIN_DATASET, --train_dataset TRAIN_DATASET
+                        path to input training dataset
+  -dv VAL_DATASET, --val_dataset VAL_DATASET
+                        path to input validation dataset
   -m MODEL, --model MODEL
                         path to trained model. If path exists, the existing
                         model is loaded and will resuming training.
-  -l LE, --le LE        path to label encoder
   -p PLOT, --plot PLOT  path to output loss/accuracy plot
+  -ev EVALUATION_RESULT, --evaluation_result EVALUATION_RESULT
+                        path to output evaluation result
   -r LR, --lr LR        Initial Learning Rate
   -b BS, --bs BS        Batch size
   -e EPOCHS, --epochs EPOCHS
                         Number of Training Epochs
-  -v VALIDATION_SPLIT, --validation_split VALIDATION_SPLIT
-                        Validation Split ratio
+  -w INPUT_IMG_WIDTH, --input_img_width INPUT_IMG_WIDTH
+                        The width of the input image.
+  -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT
+                        The height of the input image
 ```
 
 ## Inference
@@ -102,8 +107,8 @@ Optional Arguments:
 
 3. Run the following command:
 
-   ```
-   python3 demo.py -m [PATH_TO_LIVENESS_NET_MODEL] -l le.pickle -c [CONFIDENCE_THRESHOLD] -p shape_predictor_68_face_landmarks.dat -d [PATH_TO_FOLDER_CONTAINING_deploy.prototxt] -o [OUTPUT_VIDEO_PATH] -v [INPUT_VIDEO_PATH] -f [FRAME_RATE]
+   ```bash
+   python3 demo.py -m [PATH_TO_LIVENESS_NET_MODEL] -c [CONFIDENCE_THRESHOLD] -p shape_predictor_68_face_landmarks.dat -d [PATH_TO_FOLDER_CONTAINING_deploy.prototxt] -o [OUTPUT_VIDEO_PATH] -v [INPUT_VIDEO_PATH] -f [FRAME_RATE]
    ```
 
    Optional Arguments:
@@ -112,7 +117,6 @@ Optional Arguments:
      -h, --help            show this help message and exit
      -m MODEL, --model MODEL
                            path to trained model
-     -l LE, --le LE        path to label encoder
      -d DETECTOR, --detector DETECTOR
                            path to OpenCV's deep learning face detector
      -c CONFIDENCE, --confidence CONFIDENCE
@@ -125,8 +129,12 @@ Optional Arguments:
                            path to video_file
      -f FRAME_RATE, --frame_rate FRAME_RATE
                            frame rate of the input video
+     -w INPUT_IMG_WIDTH, --input_img_width INPUT_IMG_WIDTH
+                           The width of the input image.
+     -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT
+                           The height of the input image.xxxxxxxxxx   -h, --help            show this help message and exit  -m MODEL, --model MODEL                        path to trained model  -d DETECTOR, --detector DETECTOR                        path to OpenCV's deep learning face detector  -c CONFIDENCE, --confidence CONFIDENCE                        minimum probability to filter weak detections  -p SHAPE_PREDICTOR, --shape-predictor SHAPE_PREDICTOR                        path to facial landmark predictor  -o OUT_VIDEO_PATH, --out_video_path OUT_VIDEO_PATH                        path and name of output_video, must be .mp4 type  -v VIDEO_FILE, --video_file VIDEO_FILE                        path to video_file  -f FRAME_RATE, --frame_rate FRAME_RATE                        frame rate of the input video  -w INPUT_IMG_WIDTH, --input_img_width INPUT_IMG_WIDTH                        The width of the input image.  -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT                        The height of the input image.python3 demo.py -h
    ```
-
+   
    
 
 ## Further work
