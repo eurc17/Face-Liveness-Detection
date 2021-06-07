@@ -78,7 +78,8 @@ Optional Arguments:
   -d DATASET, --dataset DATASET
                         path to input dataset
   -m MODEL, --model MODEL
-                        path to trained model
+                        path to trained model. If path exists, the existing
+                        model is loaded and will resuming training.
   -l LE, --le LE        path to label encoder
   -p PLOT, --plot PLOT  path to output loss/accuracy plot
   -r LR, --lr LR        Initial Learning Rate
@@ -119,7 +120,7 @@ Optional Arguments:
      -p SHAPE_PREDICTOR, --shape-predictor SHAPE_PREDICTOR
                            path to facial landmark predictor
      -o OUT_VIDEO_PATH, --out_video_path OUT_VIDEO_PATH
-                           path and name of output_video
+                           path and name of output_video, must be .mp4 type
      -v VIDEO_FILE, --video_file VIDEO_FILE
                            path to video_file
      -f FRAME_RATE, --frame_rate FRAME_RATE
