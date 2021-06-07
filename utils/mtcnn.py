@@ -7,7 +7,7 @@ from torch import threshold
 
 
 def extract_face(args):
-    mtcnn = MTCNN(image_size=160, margin=32, keep_all=True)
+    mtcnn = MTCNN(image_size=160, margin=32, keep_all=False)
 
     base_dir = args.input_dir
     files = os.listdir(base_dir)
