@@ -101,16 +101,18 @@ frame_rate = args["frame_rate"]
 out = None
     
 #looping over frames
+start = time.time()
+k = 0
 while True:
     #checkpoint 1
     ret, frame = video_capture.read()
     if ret:
+        k+=1
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  
         rects = detector(gray, 0)
         frame = imutils.resize(frame, width=600)
         if out == None:
             (frame_height, frame_width) = frame.shape[:2]
-            print("frame size = ", frame_width, frame_height)
             out = cv2.VideoWriter(output_name, cv2.VideoWriter_fourcc('X','V','I','D'), frame_rate, (frame_width,frame_height))
         for rect in rects:
             
@@ -133,7 +135,7 @@ while True:
             else:
                 if COUNTER_LEFT >= EYE_AR_CONSEC_FRAMES:
                     TOTAL_LEFT += 1  
-                    print("Left eye winked") 
+                    # print("Left eye winked") 
                     COUNTER_LEFT = 0
                     
             if ear_right < EYE_AR_THRESH:  
@@ -141,7 +143,7 @@ while True:
             else:
                 if COUNTER_RIGHT >= EYE_AR_CONSEC_FRAMES: 
                     TOTAL_RIGHT += 1  
-                    print("Right eye winked")  
+                    # print("Right eye winked")  
                     COUNTER_RIGHT = 0
 
             x = TOTAL_LEFT + TOTAL_RIGHT
@@ -198,7 +200,10 @@ if out is not None:
     out.release()
 else:
     print("Input video cannot be read!")
+end = time.time()
+total_time = (end-start)
 video_capture.release()
+print("FPS = ", k/total_time)
 
 
 
