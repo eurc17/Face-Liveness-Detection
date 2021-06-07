@@ -33,10 +33,14 @@ ap.add_argument("-l", "--le", type=str, required=True,
 	help="path to label encoder")
 ap.add_argument("-p", "--plot", type=str, default="plot.png",
 	help="path to output loss/accuracy plot")
+ap.add_argument("-e", "--evaluation_result", type=str, default="result.txt",
+	help="path to output evaluation result")
 ap.add_argument("-r", "--lr", type=float, default=1e-4, help="Initial Learning Rate")
 ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
 ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
 ap.add_argument("-v", "--validation_split", type=float, default=0.15, help="Validation Split ratio")
+ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
+ap.add_argument("-h", "--input_img_height", type=int, default=32, help="The height of the input image.")
 args = vars(ap.parse_args())
 
 # initialize the initial learning rate, batch size, and number of
@@ -44,6 +48,8 @@ args = vars(ap.parse_args())
 INIT_LR = args["lr"]
 BS = args["bs"]
 EPOCHS = args["epochs"]
+width =  args["input_img_width"]
+height =  args["input_img_height"]
 
 # grab the list of images in our dataset directory, then initialize
 # the list of data (i.e., images) and class images
@@ -87,7 +93,7 @@ aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15,
 print("[INFO] compiling model...")
 if not os.path.exists(args["model"]):
 	opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
-	model = LivenessNet.build(width=32, height=32, depth=3,
+	model = LivenessNet.build(width=width, height=height, depth=3,
 		classes=len(le.classes_))
 	model.compile(loss="binary_crossentropy", optimizer=opt,
 		metrics=["accuracy"])
@@ -106,7 +112,9 @@ print("[INFO] evaluating network...")
 predictions = model.predict(testX, batch_size=BS)
 print(classification_report(testY.argmax(axis=1),
 	predictions.argmax(axis=1), target_names=le.classes_))
-
+with open(args["evaluation_result"], 'w') as f:
+	print(classification_report(testY.argmax(axis=1),
+		predictions.argmax(axis=1), target_names=le.classes_), file=f)
 # save the network to disk
 print("[INFO] serializing network to '{}'...".format(args["model"]))
 model.save(args["model"])
