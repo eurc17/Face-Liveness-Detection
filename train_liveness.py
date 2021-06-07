@@ -63,7 +63,7 @@ for imagePath in imagePaths:
 	# resize it to be a fixed 32x32 pixels, ignoring aspect ratio
 	label = imagePath.split(os.path.sep)[-2]
 	image = cv2.imread(imagePath)
-	image = cv2.resize(image, (32, 32))
+	image = cv2.resize(image, (width, height))
 
 	# update the data and labels lists, respectively
 	data.append(image)
