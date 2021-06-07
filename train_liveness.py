@@ -15,6 +15,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import Adam
 from keras.utils import np_utils
 from keras.models import load_model
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 from imutils import paths
 import matplotlib.pyplot as plt
 import numpy as np
@@ -40,6 +41,8 @@ ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
 ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
 ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
 ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The height of the input image.")
+ap.add_argument("-ckpt", "--checkpoint_path", type=str, default="./model_checkpoints/",
+	help="path to save intermediate model checkpoints.")
 args = vars(ap.parse_args())
 
 # initialize the initial learning rate, batch size, and number of
@@ -102,8 +105,16 @@ print("[INFO] training network for {} epochs...".format(EPOCHS))
 train_generator = aug.flow_from_directory(args["train_dataset"], target_size=(width, height), class_mode= "categorical", batch_size=BS)
 val_generator = no_aug.flow_from_directory(args["val_dataset"], target_size=(width, height), class_mode= "categorical", batch_size=BS)
 
+if not os.path.exists(args["checkpoint_path"]):
+    os.makedirs(args["checkpoint_path"])
+checkpoint_loss = ModelCheckpoint(args["checkpoint_path"] + 'best_loss.h5',
+        monitor='val_loss', save_weights_only=False, save_best_only=True, period=1)
+checkpoint_acc = ModelCheckpoint(args["checkpoint_path"] + 'best_acc.h5',
+        monitor='val_acc', save_weights_only=False, save_best_only=True, period=1)
+early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
+
 H = model.fit_generator(train_generator,
-	validation_data=val_generator, steps_per_epoch=train_generator.n // train_generator.batch_size, validation_steps=val_generator.n//val_generator.batch_size,
+	validation_data=val_generator, steps_per_epoch=train_generator.n // train_generator.batch_size, validation_steps=val_generator.n//val_generator.batch_size, callbacks=[checkpoint_loss, checkpoint_acc, early_stopping], 
 	epochs=EPOCHS)
 
 # evaluate the network
