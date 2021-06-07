@@ -26,7 +26,7 @@ ap.add_argument("-c", "--confidence", type=float, default=0.5,
 ap.add_argument("-p", "--shape-predictor", required=True,
 	     help="path to facial landmark predictor")
 ap.add_argument("-o", "--out_video_path", type=str, required=True,
-	     help="path and name of output_video")
+	     help="path and name of output_video, must be .mp4 type")
 ap.add_argument("-v", "--video_file", type=str, default="0",
 	     help="path to video_file")
 ap.add_argument("-f", "--frame_rate", type=int, default=30,
