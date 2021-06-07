@@ -14,6 +14,7 @@ from sklearn.metrics import classification_report
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import Adam
 from keras.utils import np_utils
+from keras.models import load_model
 from imutils import paths
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,7 +28,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--dataset", required=True,
 	help="path to input dataset")
 ap.add_argument("-m", "--model", type=str, required=True,
-	help="path to trained model")
+	help="path to trained model. If path exists, the existing model is loaded and will resuming training.")
 ap.add_argument("-l", "--le", type=str, required=True,
 	help="path to label encoder")
 ap.add_argument("-p", "--plot", type=str, default="plot.png",
@@ -84,11 +85,15 @@ aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15,
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
-opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
-model = LivenessNet.build(width=32, height=32, depth=3,
-	classes=len(le.classes_))
-model.compile(loss="binary_crossentropy", optimizer=opt,
-	metrics=["accuracy"])
+if not os.path.exists(args["model"]):
+	opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
+	model = LivenessNet.build(width=32, height=32, depth=3,
+		classes=len(le.classes_))
+	model.compile(loss="binary_crossentropy", optimizer=opt,
+		metrics=["accuracy"])
+else:
+    model = load_model(args["model"])
+    print("[INFO] Loaded an existing model:", args["model"])
 
 # train the network
 print("[INFO] training network for {} epochs...".format(EPOCHS))
