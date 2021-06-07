@@ -17,8 +17,6 @@ x = 0
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", type=str, required=True,
 	help="path to trained model")
-ap.add_argument("-l", "--le", type=str, required=True,
-	help="path to label encoder")
 ap.add_argument("-d", "--detector", type=str, required=True,
 	help="path to OpenCV's deep learning face detector")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
@@ -31,7 +29,12 @@ ap.add_argument("-v", "--video_file", type=str, default="0",
 	     help="path to video_file")
 ap.add_argument("-f", "--frame_rate", type=int, default=30,
 	     help="frame rate of the input video")
+ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
+ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The height of the input image.")
 args = vars(ap.parse_args())
+
+width =  args["input_img_width"]
+height =  args["input_img_height"]
 
 
 # loading face detector from the place where we stored it
@@ -46,7 +49,6 @@ net = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 # loading the liveness detecting module that was trained in the training python script
 print("loading the liveness detector")
 model = load_model(args["model"])
-le = pickle.loads(open(args["le"], "rb").read())
 
 
 #determining the facial points that are plotted by dlib
@@ -164,7 +166,7 @@ while True:
 
                 # extract the face ROI and then preproces it in the exact same manner as our training data
                 face = frame[startY:endY, startX:endX]
-                face = cv2.resize(face, (32, 32))
+                face = cv2.resize(face, (width, height))
                 face = face.astype("float") / 255.0
                 face = img_to_array(face)
                 face = np.expand_dims(face, axis=0)
@@ -172,18 +174,30 @@ while True:
                 #pass the model to determine the liveness
                 preds = model.predict(face)[0]
                 j = np.argmax(preds)
-                label = le.classes_[j]
+                if j == 0:
+                    label = "fake"
+                    label = "{}: {:.4f}".format(label, preds[j])
+                    cv2.putText(frame, label, (startX, startY - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    cv2.rectangle(frame, (startX, startY), (endX, endY),
+                        (0, 0, 255), 2)
+                else:
+                    label = "real"
+                    label = "{}: {:.4f}".format(label, preds[j])
+                    cv2.putText(frame, label, (startX, startY - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                    cv2.rectangle(frame, (startX, startY), (endX, endY),
+                        (0, 255, 0), 2)
 
                 # tag with the label
-                label = "{}: {:.4f}".format(label, preds[j])
-                cv2.putText(frame, label, (startX, startY - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                cv2.rectangle(frame, (startX, startY), (endX, endY),
-                    (0, 0, 255), 2)
+                
         out.write(frame)
     else:
         break
-out.release()
+if out is not None:
+    out.release()
+else:
+    print("Input video cannot be read!")
 video_capture.release()
 
 

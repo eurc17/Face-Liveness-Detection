@@ -25,12 +25,12 @@ import os
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-d", "--dataset", required=True,
-	help="path to input dataset")
+ap.add_argument("-d", "--train_dataset", required=True,
+	help="path to input training dataset")
+ap.add_argument("-dv", "--val_dataset", required=True,
+	help="path to input validation dataset")
 ap.add_argument("-m", "--model", type=str, required=True,
 	help="path to trained model. If path exists, the existing model is loaded and will resuming training.")
-ap.add_argument("-l", "--le", type=str, required=True,
-	help="path to label encoder")
 ap.add_argument("-p", "--plot", type=str, default="plot.png",
 	help="path to output loss/accuracy plot")
 ap.add_argument("-ev", "--evaluation_result", type=str, default="result.txt",
@@ -38,7 +38,6 @@ ap.add_argument("-ev", "--evaluation_result", type=str, default="result.txt",
 ap.add_argument("-r", "--lr", type=float, default=1e-4, help="Initial Learning Rate")
 ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
 ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
-ap.add_argument("-v", "--validation_split", type=float, default=0.15, help="Validation Split ratio")
 ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
 ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The height of the input image.")
 args = vars(ap.parse_args())
@@ -54,47 +53,44 @@ height =  args["input_img_height"]
 # grab the list of images in our dataset directory, then initialize
 # the list of data (i.e., images) and class images
 print("[INFO] loading images...")
-imagePaths = sorted(list(paths.list_images(args["dataset"])))
-data = []
-labels = []
+val_image_paths = sorted(list(paths.list_images(args["val_dataset"])))
+val_data = []
+val_labels = []
 
-for imagePath in imagePaths:
+for val_imagePath in val_image_paths:
 	# extract the class label from the filename, load the image and
 	# resize it to be a fixed 32x32 pixels, ignoring aspect ratio
-	label = imagePath.split(os.path.sep)[-2]
-	image = cv2.imread(imagePath)
-	image = cv2.resize(image, (32, 32))
+	label = val_imagePath.split(os.path.sep)[-2]
+	image = cv2.imread(val_imagePath)
+	image = cv2.resize(image, (width, height))
 
 	# update the data and labels lists, respectively
-	data.append(image)
-	labels.append(label)
+	val_data.append(image)
+	if label == 'fake':
+		val_labels.append(0)
+	else:
+		val_labels.append(1)
 
 # convert the data into a NumPy array, then preprocess it by scaling
 # all pixel intensities to the range [0, 1]
-data = np.array(data, dtype="float") / 255.0
+testX = np.array(val_data, dtype="float") / 255.0
+testY = np_utils.to_categorical(val_labels, 2)
 
-# encode the labels (which are currently strings) as integers and then
-# one-hot encode them
-le = LabelEncoder()
-labels = le.fit_transform(labels)
-labels = np_utils.to_categorical(labels, 2)
-
-# partition the data into training and testing splits using 75% of
-# the data for training and the remaining 25% for testing
-(trainX, testX, trainY, testY) = train_test_split(data, labels,
-	test_size=args["validation_split"], random_state=42)
 
 # construct the training image generator for data augmentation
+print("[INFO] Constructing ImageDataGenerator")
 aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15,
 	width_shift_range=0.2, height_shift_range=0.2, shear_range=0.15,
-	horizontal_flip=True, fill_mode="nearest")
+	horizontal_flip=True, fill_mode="nearest", rescale=1/255.)
+
+no_aug = ImageDataGenerator(rescale=1/255.)
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
 if not os.path.exists(args["model"]):
 	opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
 	model = LivenessNet.build(width=width, height=height, depth=3,
-		classes=len(le.classes_))
+		classes=2)
 	model.compile(loss="binary_crossentropy", optimizer=opt,
 		metrics=["accuracy"])
 else:
@@ -103,26 +99,26 @@ else:
 
 # train the network
 print("[INFO] training network for {} epochs...".format(EPOCHS))
-H = model.fit_generator(aug.flow(trainX, trainY, batch_size=BS),
-	validation_data=(testX, testY), steps_per_epoch=len(trainX) // BS,
+train_generator = aug.flow_from_directory(args["train_dataset"], target_size=(width, height), class_mode= "categorical", batch_size=BS)
+val_generator = no_aug.flow_from_directory(args["val_dataset"], target_size=(width, height), class_mode= "categorical", batch_size=BS)
+
+H = model.fit_generator(train_generator,
+	validation_data=val_generator, steps_per_epoch=train_generator.n // train_generator.batch_size, validation_steps=val_generator.n//val_generator.batch_size,
 	epochs=EPOCHS)
 
 # evaluate the network
 print("[INFO] evaluating network...")
 predictions = model.predict(testX, batch_size=BS)
+predicted_class_indices = np.argmax(predictions, axis=1)
+
 print(classification_report(testY.argmax(axis=1),
-	predictions.argmax(axis=1), target_names=le.classes_))
+	predicted_class_indices, target_names=["fake", "real"]))
 with open(args["evaluation_result"], 'w') as f:
 	print(classification_report(testY.argmax(axis=1),
-		predictions.argmax(axis=1), target_names=le.classes_), file=f)
+		predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
 # save the network to disk
 print("[INFO] serializing network to '{}'...".format(args["model"]))
 model.save(args["model"])
-
-# save the label encoder to disk
-f = open(args["le"], "wb")
-f.write(pickle.dumps(le))
-f.close()
 
 # plot the training loss and accuracy
 plt.style.use("ggplot")
