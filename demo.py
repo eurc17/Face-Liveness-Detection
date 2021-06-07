@@ -194,7 +194,10 @@ while True:
         out.write(frame)
     else:
         break
-out.release()
+if out is not None:
+    out.release()
+else:
+    print("Input video cannot be read!")
 video_capture.release()
 
 
