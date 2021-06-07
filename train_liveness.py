@@ -33,14 +33,14 @@ ap.add_argument("-l", "--le", type=str, required=True,
 	help="path to label encoder")
 ap.add_argument("-p", "--plot", type=str, default="plot.png",
 	help="path to output loss/accuracy plot")
-ap.add_argument("-e", "--evaluation_result", type=str, default="result.txt",
+ap.add_argument("-ev", "--evaluation_result", type=str, default="result.txt",
 	help="path to output evaluation result")
 ap.add_argument("-r", "--lr", type=float, default=1e-4, help="Initial Learning Rate")
 ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
 ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
 ap.add_argument("-v", "--validation_split", type=float, default=0.15, help="Validation Split ratio")
 ap.add_argument("-w", "--input_img_width", type=int, default=160, help="The width of the input image.")
-ap.add_argument("-h", "--input_img_height", type=int, default=160, help="The height of the input image.")
+ap.add_argument("-he", "--input_img_height", type=int, default=160, help="The height of the input image.")
 args = vars(ap.parse_args())
 
 # initialize the initial learning rate, batch size, and number of
