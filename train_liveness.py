@@ -81,7 +81,9 @@ testY = np_utils.to_categorical(val_labels, 2)
 print("[INFO] Constructing ImageDataGenerator")
 aug = ImageDataGenerator(rotation_range=20, zoom_range=0.15,
 	width_shift_range=0.2, height_shift_range=0.2, shear_range=0.15,
-	horizontal_flip=True, fill_mode="nearest")
+	horizontal_flip=True, fill_mode="nearest", rescale=1/255.)
+
+no_aug = ImageDataGenerator(rescale=1/255.)
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
@@ -98,16 +100,19 @@ else:
 # train the network
 print("[INFO] training network for {} epochs...".format(EPOCHS))
 train_generator = aug.flow_from_directory(args["train_dataset"], target_size=(width, height), class_mode= "categorical", batch_size=BS)
+val_generator = no_aug.flow_from_directory(args["val_dataset"], target_size=(width, height), class_mode= "categorical", batch_size=BS)
+
 H = model.fit_generator(train_generator,
-	validation_data=(testX, testY), steps_per_epoch=train_generator.n // train_generator.batch_size,
+	validation_data=val_generator, steps_per_epoch=train_generator.n // train_generator.batch_size, validation_steps=val_generator.n//val_generator.batch_size,
 	epochs=EPOCHS)
 
 # evaluate the network
 print("[INFO] evaluating network...")
 predictions = model.predict(testX, batch_size=BS)
-print(predictions)
+predicted_class_indices = np.argmax(predictions, axis=1)
+
 print(classification_report(testY.argmax(axis=1),
-	predictions.argmax(axis=1), target_names=["fake", "real"]))
+	predicted_class_indices, target_names=["fake", "real"]))
 with open(args["evaluation_result"], 'w') as f:
 	print(classification_report(testY.argmax(axis=1),
 		predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
