@@ -1,9 +1,3 @@
-# USAGE
-# python train_liveness.py --dataset dataset --model liveness.model --le le.pickle
-
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "2" #multi gpu: "0,1"
-
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib
 matplotlib.use("Agg")
@@ -27,7 +21,7 @@ import pickle
 import cv2
 import os
 from utils.colors import bcolors
-os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+
 
 
 # construct the argument parser and parse the arguments
