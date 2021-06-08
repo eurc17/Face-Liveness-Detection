@@ -14,27 +14,27 @@ from keras.models import Model
 from keras.layers import GlobalAveragePooling2D
 
 class LivenessNet:
-	@staticmethod
-	def build(width, height, depth, classes):
-		# initialize the model along with the input shape to be
-		# "channels last" and the channels dimension itself
+    @staticmethod
+    def build(width, height, depth, classes):
+        # initialize the model along with the input shape to be
+        # "channels last" and the channels dimension itself
   
-		inputShape = (height, width, depth)
-		chanDim = -1
+        inputShape = (height, width, depth)
+        chanDim = -1
 
-		# if we are using "channels first", update the input shape
-		# and channels dimension
-		if K.image_data_format() == "channels_first":
-			inputShape = (depth, height, width)
-			chanDim = 1
+        # if we are using "channels first", update the input shape
+        # and channels dimension
+        if K.image_data_format() == "channels_first":
+            inputShape = (depth, height, width)
+            chanDim = 1
   
-		base_model = Xception(weights='imagenet', include_top=False, input_shape=inputShape)
-		x = base_model.output
-		x = GlobalAveragePooling2D()(x)
-		x = Dense(64, activation='relu')(x)
-		predictions = Dense(classes, activation='softmax')(x)
-		model = Model(inputs=base_model.input, outputs=predictions)
+        base_model = Xception(weights='imagenet', include_top=False, input_shape=inputShape)
+        x = base_model.output
+        x = GlobalAveragePooling2D()(x)
+        x = Dense(64, activation='relu')(x)
+        predictions = Dense(classes, activation='softmax')(x)
+        model = Model(inputs=base_model.input, outputs=predictions)
 
 
-		# return the constructed network architecture
-		return model
+        # return the constructed network architecture
+        return model

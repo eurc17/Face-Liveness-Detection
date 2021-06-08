@@ -11,24 +11,25 @@ import os
 import dlib
 from scipy.spatial import distance as dist
 x = 0
+from utils.colors import bcolors
 
 
 # construct argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", type=str, required=True,
-	help="path to trained model")
+    help="path to trained model")
 ap.add_argument("-d", "--detector", type=str, required=True,
-	help="path to OpenCV's deep learning face detector")
+    help="path to OpenCV's deep learning face detector")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
-	help="minimum probability to filter weak detections")
+    help="minimum probability to filter weak detections")
 ap.add_argument("-p", "--shape-predictor", required=True,
-	     help="path to facial landmark predictor")
+         help="path to facial landmark predictor")
 ap.add_argument("-o", "--out_video_path", type=str, required=True,
-	     help="path and name of output_video, must be .mp4 type")
+         help="path and name of output_video, must be .mp4 type")
 ap.add_argument("-v", "--video_file", type=str, default="0",
-	     help="path to video_file")
+         help="path to video_file")
 ap.add_argument("-f", "--frame_rate", type=int, default=30,
-	     help="frame rate of the input video")
+         help="frame rate of the input video")
 ap.add_argument("-w", "--input_img_width", type=int, default=160, help="The width of the input image.")
 ap.add_argument("-he", "--input_img_height", type=int, default=160, help="The height of the input image.")
 args = vars(ap.parse_args())
@@ -38,16 +39,16 @@ height =  args["input_img_height"]
 
 
 # loading face detector from the place where we stored it
-print("loading face detector")
+print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " loading face detector")
 protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
 #Loading the caffe model 
 modelPath = os.path.sep.join([args["detector"],
-	"res10_300x300_ssd_iter_140000.caffemodel"])
+    "res10_300x300_ssd_iter_140000.caffemodel"])
 #reading data from the model.
 net = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 
 # loading the liveness detecting module that was trained in the training python script
-print("loading the liveness detector")
+print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " loading the liveness detector")
 model = load_model(args["model"])
 
 
@@ -90,7 +91,7 @@ detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(args["shape_predictor"])
 #starting the stream
 if args["video_file"] == "0":
-    print("[INFO] Using camera as input.")
+    print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Using camera as input.")
     video_capture = cv2.VideoCapture(0)  
 else:
     video_capture = cv2.VideoCapture(args["video_file"])
@@ -127,9 +128,9 @@ while True:
             right_eye_hull = cv2.convexHull(right_eye)  
             ear_left = eye_aspect_ratio(left_eye)  
             ear_right = eye_aspect_ratio(right_eye)
-		
+        
             #calculating blink wheneer the ear value drops down below the threshold
-	
+    
             if ear_left < EYE_AR_THRESH:
                 COUNTER_LEFT += 1
             else:
@@ -199,11 +200,11 @@ while True:
 if out is not None:
     out.release()
 else:
-    print("Input video cannot be read!")
+    print(bcolors.FAIL + "[Error]" + bcolors.ENDC + " Input video cannot be read!")
 end = time.time()
 total_time = (end-start)
 video_capture.release()
-print("FPS = ", k/total_time)
+print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " FPS = ", k/total_time)
 
 
 
