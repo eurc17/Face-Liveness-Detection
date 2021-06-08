@@ -57,8 +57,13 @@ if args["ensemble_flag"] == False:
 else:
     if os.path.exists(args["ensemble_path"]):
         models = []
+        frame_size = []
         for model_path in glob.glob(args["ensemble_path"]):
             print(model_path)
+            if "xception" in model_path:
+                frame_size.append(160)
+            if "resnet50" in model_path:
+                frame_size.append(224)
             model = load_model(model_path)
             models.append(model)
     else:
@@ -181,18 +186,23 @@ while True:
 
                 # extract the face ROI and then preproces it in the exact same manner as our training data
                 face = frame[startY:endY, startX:endX]
-                face = cv2.resize(face, (width, height))
-                face = face.astype("float") / 255.0
-                face = img_to_array(face)
-                face = np.expand_dims(face, axis=0)
+                
 
                 #pass the model to determine the liveness
                 if args["ensemble_flag"] == False:
+                    face = cv2.resize(face, (width, height))
+                    face = face.astype("float") / 255.0
+                    face = img_to_array(face)
+                    face = np.expand_dims(face, axis=0)
                     raw_pred = model.predict(face)
                     preds = raw_pred[0]
                     j = np.argmax(preds)
                 else:
                     for (i, model) in enumerate(models):
+                        face = cv2.resize(face, (frame_size[i], frame_size[i]))
+                        face = face.astype("float") / 255.0
+                        face = img_to_array(face)
+                        face = np.expand_dims(face, axis=0)
                         raw_pred = model.predict(face)
                         if i == 0:
                             preds = raw_pred[0]
