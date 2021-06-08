@@ -132,7 +132,7 @@ Optional Arguments:
      -w INPUT_IMG_WIDTH, --input_img_width INPUT_IMG_WIDTH
                            The width of the input image.
      -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT
-                           The height of the input image.xxxxxxxxxx   -h, --help            show this help message and exit  -m MODEL, --model MODEL                        path to trained model  -d DETECTOR, --detector DETECTOR                        path to OpenCV's deep learning face detector  -c CONFIDENCE, --confidence CONFIDENCE                        minimum probability to filter weak detections  -p SHAPE_PREDICTOR, --shape-predictor SHAPE_PREDICTOR                        path to facial landmark predictor  -o OUT_VIDEO_PATH, --out_video_path OUT_VIDEO_PATH                        path and name of output_video, must be .mp4 type  -v VIDEO_FILE, --video_file VIDEO_FILE                        path to video_file  -f FRAME_RATE, --frame_rate FRAME_RATE                        frame rate of the input video  -w INPUT_IMG_WIDTH, --input_img_width INPUT_IMG_WIDTH                        The width of the input image.  -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT                        The height of the input image.python3 demo.py -h
+                           The height of the input image.
    ```
    
    
