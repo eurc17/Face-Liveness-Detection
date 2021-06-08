@@ -62,7 +62,7 @@ else:
             print(model_path)
             if "xception" in model_path:
                 frame_size.append(160)
-            if "resnet50" in model_path:
+            if "ResNet50" in model_path:
                 frame_size.append(224)
             model = load_model(model_path)
             models.append(model)
