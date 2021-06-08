@@ -31,8 +31,8 @@ ap.add_argument("-v", "--video_file", type=str, default="0",
          help="path to video_file")
 ap.add_argument("-f", "--frame_rate", type=int, default=30,
          help="frame rate of the input video")
-ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
-ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The height of the input image.")
+ap.add_argument("-w", "--input_img_width", type=int, default=224, help="The width of the input image.")
+ap.add_argument("-he", "--input_img_height", type=int, default=224, help="The height of the input image.")
 ap.add_argument("-ens", "--ensemble_flag", type=bool, default=False, help="To use ensemble of models or not. If set to True, ensure to provide path to all models (including model provided in -m flag) to perform ensemble")
 ap.add_argument("-ensp", "--ensemble_path", type=str, default="", help="The path to directory storing all models for ensemble usage.")
 args = vars(ap.parse_args())

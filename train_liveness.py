@@ -27,6 +27,8 @@ import pickle
 import cv2
 import os
 from utils.colors import bcolors
+os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
