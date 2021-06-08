@@ -1,6 +1,9 @@
 # USAGE
 # python train_liveness.py --dataset dataset --model liveness.model --le le.pickle
 
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "2" #multi gpu: "0,1"
+
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib
 matplotlib.use("Agg")
@@ -40,8 +43,8 @@ ap.add_argument("-ev", "--evaluation_result", type=str, default="result.txt",
 ap.add_argument("-r", "--lr", type=float, default=1e-4, help="Initial Learning Rate")
 ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
 ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
-ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
-ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The height of the input image.")
+ap.add_argument("-w", "--input_img_width", type=int, default=224, help="The width of the input image.")
+ap.add_argument("-he", "--input_img_height", type=int, default=224, help="The height of the input image.")
 ap.add_argument("-ckpt", "--checkpoint_path", type=str, default="./model_checkpoints/",
     help="path to save intermediate model checkpoints.")
 args = vars(ap.parse_args())
@@ -132,7 +135,7 @@ predicted_class_indices = np.argmax(predictions, axis=1)
 print("Last model:")
 print(classification_report(testY.argmax(axis=1),
     predicted_class_indices, target_names=["fake", "real"]))
-with open(args["evaluation_result"], 'a') as f:
+with open(args["evaluation_result"], 'w') as f:
     print("Last model:", file=f)
     print(classification_report(testY.argmax(axis=1),
         predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
@@ -145,7 +148,7 @@ predicted_class_indices = np.argmax(predictions, axis=1)
 print("best loss model:")
 print(classification_report(testY.argmax(axis=1),
     predicted_class_indices, target_names=["fake", "real"]))
-with open(args["evaluation_result"], 'a') as f:
+with open(args["evaluation_result"], 'w') as f:
     print("best loss model:", file=f)
     print(classification_report(testY.argmax(axis=1),
         predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
@@ -156,7 +159,7 @@ predicted_class_indices = np.argmax(predictions, axis=1)
 print("best acc model:")
 print(classification_report(testY.argmax(axis=1),
     predicted_class_indices, target_names=["fake", "real"]))
-with open(args["evaluation_result"], 'a') as f:
+with open(args["evaluation_result"], 'w') as f:
     print("best acc model:", file=f)
     print(classification_report(testY.argmax(axis=1),
         predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
