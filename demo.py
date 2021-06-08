@@ -34,7 +34,8 @@ ap.add_argument("-f", "--frame_rate", type=int, default=30,
 ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
 ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The height of the input image.")
 ap.add_argument("-ens", "--ensemble_flag", type=bool, default=False, help="To use ensemble of models or not. If set to True, ensure to provide path to all models (including model provided in -m flag) to perform ensemble")
-ap.add_argument("-ensp", "--ensemble_path", type=str, default="", help="The path to directory storing all models for ensemble usage.")
+ap.add_argument("-ensp", "--ensemble_path", type=str, default="", help="The path to directory storing all models for ensemble usage. It should also contain a file named frame_size.txt specifying the input size of each model.\
+                with lines: MODEL_FILE_NAME FRAME_WIDTH FRAME_HEIGHT")
 args = vars(ap.parse_args())
 
 width =  args["input_img_width"]
@@ -58,12 +59,29 @@ else:
     if os.path.exists(args["ensemble_path"]):
         models = []
         frame_size = []
-        for model_path in glob.glob(args["ensemble_path"]):
+        if not os.path.exists(args["ensemble_path"]+"/frame_size.txt"):
+            print(bcolors.WARNING + "[WARNING]" + bcolors.ENDC + " frame_size.txt does not exists, the input sizes are being guessed.")
+        else:
+            frame_dict = dict()
+            f = open(args["ensemble_path"]+"/frame_size.txt", "r")
+            frame_lines = f.readlines()
+            f.close()
+            for line in frame_lines:
+                model_name = line.split()[0]
+                print(model_name)
+                frame_w = int(line.split()[1])
+                frame_h = int(line.split()[2])
+                print(frame_w)
+                print(frame_h)
+                frame_dict[model_name] = (frame_w, frame_h)
+        for model_path in glob.glob(args["ensemble_path"]+"*.h5"):
             print(model_path)
-            if "xception" in model_path:
-                frame_size.append(160)
-            if "ResNet50" in model_path:
-                frame_size.append(224)
+            if os.path.basename(model_path) in frame_dict:
+                frame_size.append(frame_dict[os.path.basename(model_path)])
+            elif "xception" in model_path:
+                frame_size.append((160, 160))
+            elif "ResNet50" in model_path:
+                frame_size.append((224, 224))
             model = load_model(model_path)
             models.append(model)
     else:
@@ -184,12 +202,11 @@ while True:
                 endX = min(w, endX)
                 endY = min(h, endY)
 
-                # extract the face ROI and then preproces it in the exact same manner as our training data
-                face = frame[startY:endY, startX:endX]
-                
 
                 #pass the model to determine the liveness
                 if args["ensemble_flag"] == False:
+                    # extract the face ROI and then preproces it in the exact same manner as our training data
+                    face = frame[startY:endY, startX:endX]
                     face = cv2.resize(face, (width, height))
                     face = face.astype("float") / 255.0
                     face = img_to_array(face)
@@ -199,7 +216,9 @@ while True:
                     j = np.argmax(preds)
                 else:
                     for (i, model) in enumerate(models):
-                        face = cv2.resize(face, (frame_size[i], frame_size[i]))
+                        # extract the face ROI and then preproces it in the exact same manner as our training data
+                        face = frame[startY:endY, startX:endX]
+                        face = cv2.resize(face, frame_size[i])
                         face = face.astype("float") / 255.0
                         face = img_to_array(face)
                         face = np.expand_dims(face, axis=0)
