@@ -132,7 +132,7 @@ predicted_class_indices = np.argmax(predictions, axis=1)
 print("Last model:")
 print(classification_report(testY.argmax(axis=1),
     predicted_class_indices, target_names=["fake", "real"]))
-with open(args["evaluation_result"], 'w') as f:
+with open(args["evaluation_result"], 'a') as f:
     print("Last model:", file=f)
     print(classification_report(testY.argmax(axis=1),
         predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
@@ -145,7 +145,7 @@ predicted_class_indices = np.argmax(predictions, axis=1)
 print("best loss model:")
 print(classification_report(testY.argmax(axis=1),
     predicted_class_indices, target_names=["fake", "real"]))
-with open(args["evaluation_result"], 'w') as f:
+with open(args["evaluation_result"], 'a') as f:
     print("best loss model:", file=f)
     print(classification_report(testY.argmax(axis=1),
         predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
@@ -156,7 +156,7 @@ predicted_class_indices = np.argmax(predictions, axis=1)
 print("best acc model:")
 print(classification_report(testY.argmax(axis=1),
     predicted_class_indices, target_names=["fake", "real"]))
-with open(args["evaluation_result"], 'w') as f:
+with open(args["evaluation_result"], 'a') as f:
     print("best acc model:", file=f)
     print(classification_report(testY.argmax(axis=1),
         predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)

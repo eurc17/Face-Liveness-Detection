@@ -68,7 +68,7 @@ sample_liveness_data_training/
 2. Train with the following command:
 
 ```bash
-python3 train_liveness.py --d [PATH_TO_TRAINING_DATASET] -dv [PATH_TO_VAL_DATASET] --model [PATH_TO_SAVE_MODEL]
+python3 train_liveness.py -d [PATH_TO_TRAINING_DATASET] -dv [PATH_TO_VAL_DATASET] --model [PATH_TO_SAVE_MODEL]
 ```
 
 Optional Arguments:
