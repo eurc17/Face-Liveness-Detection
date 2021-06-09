@@ -68,19 +68,18 @@ else:
             f.close()
             for line in frame_lines:
                 model_name = line.split()[0]
-                print(model_name)
                 frame_w = int(line.split()[1])
                 frame_h = int(line.split()[2])
-                print(frame_w)
-                print(frame_h)
                 frame_dict[model_name] = (frame_w, frame_h)
         for model_path in glob.glob(args["ensemble_path"]+"*.h5"):
-            print(model_path)
             if os.path.basename(model_path) in frame_dict:
                 frame_size.append(frame_dict[os.path.basename(model_path)])
+                print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " loaded "+os.path.basename(model_path)+" with frame size = ", frame_dict[os.path.basename(model_path)])
             elif "xception" in model_path:
                 frame_size.append((160, 160))
             elif "ResNet50" in model_path:
+                frame_size.append((224, 224))
+            elif "densenet" in model_path:
                 frame_size.append((224, 224))
             model = load_model(model_path)
             models.append(model)
@@ -136,6 +135,7 @@ output_name = args["out_video_path"]
 frame_rate = args["frame_rate"]
 out = None
     
+print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " start processing video")
 #looping over frames
 start = time.time()
 k = 0
