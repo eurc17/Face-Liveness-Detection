@@ -40,11 +40,8 @@ if not os.path.exists(out_video_dir):
 for video_path in sorted(glob.glob(input_video_dir+"/*")):
     video_base_name = os.path.basename(video_path)
     video_name = video_base_name.split(".")[0]
-    # input_video_path = "/".join(video_path.split("/")[1:])
-    
     out_video_name = "result_ensemble_"+video_name+".mp4"
     out_video_path = out_video_dir+"/"+out_video_name
-    # out_video_path = "/".join(out_video_path.split("/")[1:])
     print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Running ensembled model on "+video_base_name)
     os.system("python3 ../demo.py -m ./ -d ../ -c "+str(confidence)+" -p ../shape_predictor_68_face_landmarks.dat -o "+out_video_path+" -v "+video_path+" -f "+str(args["frame_rate"])+" -ens True -ensp "+model_dir)
         

@@ -66,12 +66,10 @@ for model_path in glob.glob(model_dir+"*.h5"):
 for video_path in sorted(glob.glob(input_video_dir+"/*")):
     video_base_name = os.path.basename(video_path)
     video_name = video_base_name.split(".")[0]
-    # input_video_path = "/".join(video_path.split("/")[1:])
     for i, model_path in enumerate(models_path):
         model_name = os.path.basename(model_path).split(".")[0]
         out_video_name = "result_"+model_name+"_"+video_name+".mp4"
         out_video_path = out_video_dir+"/"+out_video_name
-        # out_video_path = "/".join(out_video_path.split("/")[1:])
         (model_w , model_h)= frame_size[i]
         print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Running "+model_name+" on "+video_base_name)
         os.system("python3 ../demo.py -m "+model_path+" -d ../ -c "+str(confidence)+" -p ../shape_predictor_68_face_landmarks.dat -o "+out_video_path+" -v "+video_path+" -f "+str(args["frame_rate"])+" -w "+str(model_w)+" -he "+str(model_h))
