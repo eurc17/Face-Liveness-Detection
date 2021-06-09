@@ -8,7 +8,7 @@ from keras.layers.core import Flatten
 from keras.layers.core import Dropout
 from keras.layers.core import Dense
 from keras import backend as K
-from keras.applications.xception import Xception
+from keras.applications.mobilenet import MobileNet
 from keras.preprocessing import image
 from keras.models import Model
 from keras.layers import GlobalAveragePooling2D
@@ -28,7 +28,7 @@ class LivenessNet:
             inputShape = (depth, height, width)
             chanDim = 1
   
-        base_model = Xception(weights='imagenet', include_top=False, input_shape=inputShape)
+        base_model = MobileNet(weights='imagenet', include_top=False, input_shape=inputShape)
         x = base_model.output
         x = GlobalAveragePooling2D()(x)
         x = Dense(64, activation='relu')(x)
