@@ -6,4 +6,4 @@ tensorflow==1.6.0
 imutils==0.5.4
 scipy==1.0.0
 dlib==19.22.0
-h5py
+h5py==2.10.0

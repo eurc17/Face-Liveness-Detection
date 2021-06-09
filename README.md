@@ -44,6 +44,7 @@ tensorflow==1.6.0
 imutils==0.5.4
 scipy==1.0.0
 dlib==19.22.0
+h5py==2.10.0
 ```
 
 ## Training
@@ -134,8 +135,8 @@ Optional Arguments:
      -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT
                            The height of the input image.
    ```
-   
-   
+
+4. There are scripts for running demo on several videos in a folder. Please checkout the README file in [utils](https://github.com/eurc17/Face-Liveness-Detection/tree/master/utils).
 
 ## Further work
 
