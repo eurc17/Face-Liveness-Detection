@@ -93,7 +93,9 @@ Optional Arguments:
   -w INPUT_IMG_WIDTH, --input_img_width INPUT_IMG_WIDTH
                         The width of the input image.
   -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT
-                        The height of the input image
+                        The height of the input image.
+  -ckpt CHECKPOINT_PATH, --checkpoint_path CHECKPOINT_PATH
+                        path to save intermediate model checkpoints.
 ```
 
 ## Inference
@@ -134,6 +136,16 @@ Optional Arguments:
                            The width of the input image.
      -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT
                            The height of the input image.
+     -ens ENSEMBLE_FLAG, --ensemble_flag ENSEMBLE_FLAG
+                           To use ensemble of models or not. If set to True,
+                           ensure to provide path to all models (including model
+                           provided in -m flag) to perform ensemble
+     -ensp ENSEMBLE_PATH, --ensemble_path ENSEMBLE_PATH
+                           The path to directory storing all models for ensemble
+                           usage. It should also contain a file named
+                           frame_size.txt specifying the input size of each
+                           model. with lines: MODEL_FILE_NAME FRAME_WIDTH
+                           FRAME_HEIGHT
    ```
 
 4. There are scripts for running demo on several videos in a folder. Please checkout the README file in [utils](https://github.com/eurc17/Face-Liveness-Detection/tree/master/utils).
