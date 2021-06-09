@@ -201,6 +201,9 @@ while True:
                 startY = max(0, startY)
                 endX = min(w, endX)
                 endY = min(h, endY)
+                
+                if endX - startX < 60 or endY - startY < 60:
+                    continue
 
 
                 #pass the model to determine the liveness
