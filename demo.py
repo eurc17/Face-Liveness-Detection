@@ -22,6 +22,8 @@ def signal_handler(sig, frame):
     if out is not None:
         out.release()
         video_capture.release()
+    if args["video_file"] == "0" and out is not None:
+        cv2.destroyAllWindows()
     print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Interrupt Signal Received.")
     sys.exit(0)
     
@@ -268,6 +270,12 @@ while True:
                 # tag with the label
                 
         out.write(frame)
+        if args["video_file"] == "0":
+            cv2.imshow("Frame", frame)
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                break
+            
     else:
         break
 if out is not None:
