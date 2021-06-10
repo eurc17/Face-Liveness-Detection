@@ -13,6 +13,19 @@ from scipy.spatial import distance as dist
 import glob
 x = 0
 from utils.colors import bcolors
+import signal
+import sys
+
+def signal_handler(sig, frame):
+    global out
+    global video_capture
+    if out is not None:
+        out.release()
+        video_capture.release()
+    print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Interrupt Signal Received.")
+    sys.exit(0)
+    
+signal.signal(signal.SIGINT, signal_handler)
 
 
 # construct argument parse and parse the arguments
@@ -127,6 +140,11 @@ predictor = dlib.shape_predictor(args["shape_predictor"])
 if args["video_file"] == "0":
     print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Using camera as input.")
     video_capture = cv2.VideoCapture(0)  
+    if not video_capture.isOpened():
+        print(bcolors.FAIL + "[Error]" + bcolors.ENDC + " Camera cannot be opened!")
+        exit(1)
+    video_capture.set(3, 640)
+    video_capture.set(4, 480)
 else:
     video_capture = cv2.VideoCapture(args["video_file"])
     
