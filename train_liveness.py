@@ -8,8 +8,6 @@ matplotlib.use("Agg")
 # import the necessary packages
 #from pyimagesearch.livenessnet import LivenessNet
 from livenessnet import LivenessNet
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import Adam
@@ -20,7 +18,6 @@ from imutils import paths
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
-import pickle
 import cv2
 import os
 from utils.colors import bcolors
@@ -131,11 +128,11 @@ predicted_class_indices = np.argmax(predictions, axis=1)
 
 print("Last model:")
 print(classification_report(testY.argmax(axis=1),
-    predicted_class_indices, target_names=["fake", "real"]))
+    predicted_class_indices, target_names=["fake", "real"], digits=6))
 with open(args["evaluation_result"], 'a') as f:
     print("Last model:", file=f)
     print(classification_report(testY.argmax(axis=1),
-        predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
+        predictions.argmax(axis=1), target_names=["fake", "real"], digits=6), file=f)
 
 
 # Evaluate on best models:
@@ -144,22 +141,22 @@ predictions = model_loss.predict(testX, batch_size=BS)
 predicted_class_indices = np.argmax(predictions, axis=1)
 print("best loss model:")
 print(classification_report(testY.argmax(axis=1),
-    predicted_class_indices, target_names=["fake", "real"]))
+    predicted_class_indices, target_names=["fake", "real"], digits=6))
 with open(args["evaluation_result"], 'a') as f:
     print("best loss model:", file=f)
     print(classification_report(testY.argmax(axis=1),
-        predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
+        predictions.argmax(axis=1), target_names=["fake", "real"], digits=6), file=f)
 
 model_acc = load_model(args["checkpoint_path"] + 'best_acc.h5')
 predictions = model_acc.predict(testX, batch_size=BS)
 predicted_class_indices = np.argmax(predictions, axis=1)
 print("best acc model:")
 print(classification_report(testY.argmax(axis=1),
-    predicted_class_indices, target_names=["fake", "real"]))
+    predicted_class_indices, target_names=["fake", "real"], digits=6))
 with open(args["evaluation_result"], 'a') as f:
     print("best acc model:", file=f)
     print(classification_report(testY.argmax(axis=1),
-        predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
+        predictions.argmax(axis=1), target_names=["fake", "real"], digits=6), file=f)
 
 
 # plot the training loss and accuracy
