@@ -55,6 +55,8 @@ ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The hei
 ap.add_argument("-ens", "--ensemble_flag", type=bool, default=False, help="To use ensemble of models or not. If set to True, ensure to provide path to all models (including model provided in -m flag) to perform ensemble")
 ap.add_argument("-ensp", "--ensemble_path", type=str, default="", help="The path to directory storing all models for ensemble usage. It should also contain a file named frame_size.txt specifying the input size of each model.\
                 with lines: MODEL_FILE_NAME FRAME_WIDTH FRAME_HEIGHT")
+ap.add_argument("-t", "--face_thresh", type=int, default=60,
+    help="minimum size of face to undergo LivenessNet classification.")
 args = vars(ap.parse_args())
 
 width =  args["input_img_width"]
@@ -227,7 +229,7 @@ while True:
                 endX = min(w, endX)
                 endY = min(h, endY)
                 
-                if endX - startX < 60 or endY - startY < 60:
+                if endX - startX < args["face_thresh"] or endY - startY < args["face_thresh"]:
                     continue
 
 

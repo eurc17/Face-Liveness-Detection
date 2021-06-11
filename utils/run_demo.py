@@ -17,6 +17,8 @@ ap.add_argument("-c", "--confidence", default=0.9,
     help="confidence threshold to detecting human face")
 ap.add_argument("-f", "--frame_rate", default=30,
     help="frame rate of the output video")
+ap.add_argument("-t", "--face_thresh", type=int, default=60,
+    help="minimum size of face to undergo LivenessNet classification.")
 args = vars(ap.parse_args())
 
 input_video_dir = args["input_video_dir"]
@@ -68,9 +70,9 @@ for video_path in sorted(glob.glob(input_video_dir+"/*")):
     video_name = video_base_name.split(".")[0]
     for i, model_path in enumerate(models_path):
         model_name = os.path.basename(model_path).split(".")[0]
-        out_video_name = "result_"+model_name+"_"+video_name+".mp4"
+        out_video_name = "result_"+model_name+"_"+video_name+"_thresh_"+str(args["face_thresh"])+".mp4"
         out_video_path = out_video_dir+"/"+out_video_name
         (model_w , model_h)= frame_size[i]
         print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Running "+model_name+" on "+video_base_name)
-        os.system("python3 ../demo.py -m "+model_path+" -d ../ -c "+str(confidence)+" -p ../shape_predictor_68_face_landmarks.dat -o "+out_video_path+" -v "+video_path+" -f "+str(args["frame_rate"])+" -w "+str(model_w)+" -he "+str(model_h))
+        os.system("python3 ../demo.py -m "+model_path+" -d ../ -c "+str(confidence)+" -p ../shape_predictor_68_face_landmarks.dat -o "+out_video_path+" -v "+video_path+" -f "+str(args["frame_rate"])+" -w "+str(model_w)+" -he "+str(model_h)+" -t "+str(args["face_thresh"]))
         
