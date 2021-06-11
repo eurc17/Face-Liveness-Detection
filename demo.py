@@ -165,6 +165,7 @@ start = time.time()
 k = 0
 while True:
     #checkpoint 1
+    start_inner = time.time()
     ret, frame = video_capture.read()
     if ret:
         k+=1
@@ -274,10 +275,14 @@ while True:
                 # tag with the label
                 
         out.write(frame)
+        stop_inner = time.time()
         if args["video_file"] == "0":
+            total_inner = stop_inner - start_inner
+            print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " FPS = {:.2f}".format(1/total_inner), end = "\r")
             cv2.imshow("Frame", frame)
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
+                print("")
                 break
             
     else:
