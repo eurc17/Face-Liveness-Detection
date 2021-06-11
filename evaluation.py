@@ -9,6 +9,10 @@ import cv2
 import os
 import glob
 import numpy as np
+from keras import backend
+
+def relu6(x):
+    return backend.relu(x, max_value=6)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-dv", "--eval_dataset", required=True,
@@ -51,7 +55,7 @@ testX = np.array(val_data, dtype="float") / 255.0
 testY = np_utils.to_categorical(val_labels, 2)
 
 print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " loading model...")
-model = load_model(args["model"])
+model = load_model(args["model"], custom_objects={'relu6': relu6})
 print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " evaluating model...")
 predictions = model.predict(testX, batch_size=BS)
 predicted_class_indices = np.argmax(predictions, axis=1)

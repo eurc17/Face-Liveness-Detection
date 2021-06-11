@@ -15,6 +15,10 @@ x = 0
 from utils.colors import bcolors
 import signal
 import sys
+from keras import backend
+
+def relu6(x):
+    return backend.relu(x, max_value=6)
 
 def signal_handler(sig, frame):
     global out
@@ -69,7 +73,7 @@ net = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 # loading the liveness detecting module that was trained in the training python script
 print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " loading the liveness detector")
 if args["ensemble_flag"] == False:
-    model = load_model(args["model"])
+    model = load_model(args["model"], custom_objects={'relu6': relu6})
 else:
     if os.path.exists(args["ensemble_path"]):
         models = []
@@ -96,7 +100,7 @@ else:
                 frame_size.append((224, 224))
             elif "densenet" in model_path:
                 frame_size.append((224, 224))
-            model = load_model(model_path)
+            model = load_model(model_path, custom_objects={'relu6': relu6})
             models.append(model)
     else:
         print(bcolors.FAIL + "[Error]" + bcolors.ENDC + " Path to ensemble models are INVALID!")

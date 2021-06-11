@@ -9,7 +9,10 @@ import cv2
 import os
 import glob
 import numpy as np
+from keras import backend
 
+def relu6(x):
+    return backend.relu(x, max_value=6)
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-dv", "--eval_dataset", required=True,
@@ -67,7 +70,7 @@ if os.path.exists(args["model"]):
             frame_size.append((224, 224))
         elif "densenet" in model_path:
             frame_size.append((224, 224))
-        model = load_model(model_path)
+        model = load_model(model_path, custom_objects={'relu6': relu6})
         models.append(model)
 else:
     print(bcolors.FAIL + "[Error]" + bcolors.ENDC + " Path to ensemble models are INVALID!")
