@@ -37,8 +37,8 @@ ap.add_argument("-ev", "--evaluation_result", type=str, default="result.txt",
 ap.add_argument("-r", "--lr", type=float, default=1e-4, help="Initial Learning Rate")
 ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
 ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
-ap.add_argument("-w", "--input_img_width", type=int, default=32, help="The width of the input image.")
-ap.add_argument("-he", "--input_img_height", type=int, default=32, help="The height of the input image.")
+ap.add_argument("-w", "--input_img_width", type=int, default=160, help="The width of the input image.")
+ap.add_argument("-he", "--input_img_height", type=int, default=160, help="The height of the input image.")
 ap.add_argument("-ckpt", "--checkpoint_path", type=str, default="./model_checkpoints/",
     help="path to save intermediate model checkpoints.")
 args = vars(ap.parse_args())
