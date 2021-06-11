@@ -24,9 +24,15 @@ The problem of detecting fake faces vs real/legitimate faces is treated as a bin
 9. train_liveness.py: The python script to train the model.
 7. resource/ : Contains resources to show on Github page.
 
-
 ## Working flow
-![alt text](https://github.com/sakethbachu/liveness_detection/blob/master/sample_liveness_data/Desc%20info/workflow.png "Logo Title Text 1")
+
+### Training
+
+![training workflow](https://github.com/sakethbachu/liveness_detection/blob/master/sample_liveness_data/Desc%20info/workflow.png "Logo Title Text 1")
+
+### Inference
+
+![inference workflow](https://github.com/eurc17/Face-Liveness-Detection/blob/master/resource/demo_flow.png "Logo Title Text 1")
 
 ## Environment Setup
 
