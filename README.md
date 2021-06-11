@@ -17,13 +17,12 @@ The problem of detecting fake faces vs real/legitimate faces is treated as a bin
 
 ## Contents of this repository
 1. sample_liveness_data : contains the sample dataset.
-2. Face Liveness Detection -Saketh.pptx : A couple of slides that will give you information on the project and our motivation.
-3. demo.py : Our demonstration script will fire up your webcam to grab frames to conduct face liveness detection in real-time.
-4. deploy.prototxt : Support file for pretrained face detector. 
-6. liveness.model : The liveness model file.
-7. livenessnet.py : The python file containing the model.
+3. demo.py : Our demonstration script will fire up your webcam to grab frames to conduct face liveness detection in real-time if input_video path not provided. Else, it will take an input video and output the result as a video.
+3. deploy.prototxt : Support file for pretrained face detector. 
+7. livenessnet.py : The python file containing the model structure.
 8. res10_300x300_ssd_iter_140000.caffemodel: Pretrained face detector.
 9. train_liveness.py: The python script to train the model.
+7. resource/ : Contains resources to show on Github page.
 
 
 ## Working flow
