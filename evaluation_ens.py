@@ -57,7 +57,7 @@ if os.path.exists(args["model"]):
             frame_w = int(line.split()[1])
             frame_h = int(line.split()[2])
             frame_dict[model_name] = (frame_w, frame_h)
-    for model_path in glob.glob(args["model"]+"*.h5"):
+    for model_path in glob.glob(args["model"]+"/*.h5"):
         if os.path.basename(model_path) in frame_dict:
             frame_size.append(frame_dict[os.path.basename(model_path)])
             print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " loaded "+os.path.basename(model_path)+" with frame size = ", frame_dict[os.path.basename(model_path)])
