@@ -24,6 +24,10 @@ import pickle
 import cv2
 import os
 from utils.colors import bcolors
+from keras import backend
+
+def relu6(x):
+    return backend.relu(x, max_value=6)
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -40,8 +44,8 @@ ap.add_argument("-ev", "--evaluation_result", type=str, default="result.txt",
 ap.add_argument("-r", "--lr", type=float, default=1e-4, help="Initial Learning Rate")
 ap.add_argument("-b", "--bs", type=int, default=8, help="Batch size")
 ap.add_argument("-e", "--epochs", type=int, default=50, help="Number of Training Epochs")
-ap.add_argument("-w", "--input_img_width", type=int, default=160, help="The width of the input image.")
-ap.add_argument("-he", "--input_img_height", type=int, default=160, help="The height of the input image.")
+ap.add_argument("-w", "--input_img_width", type=int, default=224, help="The width of the input image.")
+ap.add_argument("-he", "--input_img_height", type=int, default=224, help="The height of the input image.")
 ap.add_argument("-ckpt", "--checkpoint_path", type=str, default="./model_checkpoints/",
     help="path to save intermediate model checkpoints.")
 args = vars(ap.parse_args())
@@ -98,7 +102,7 @@ if not os.path.exists(args["model"]):
     model.compile(loss="binary_crossentropy", optimizer=opt,
         metrics=["accuracy"])
 else:
-    model = load_model(args["model"])
+    model = load_model(args["model"], custom_objects={'relu6': relu6})
     print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Loaded an existing model:", args["model"])
 
 # train the network
@@ -112,7 +116,7 @@ checkpoint_loss = ModelCheckpoint(args["checkpoint_path"] + 'best_loss.h5',
         monitor='val_loss', save_weights_only=False, save_best_only=True, period=1)
 checkpoint_acc = ModelCheckpoint(args["checkpoint_path"] + 'best_acc.h5',
         monitor='val_acc', save_weights_only=False, save_best_only=True, period=1)
-early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=1)
+early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=1)
 
 H = model.fit_generator(train_generator,
     validation_data=val_generator, steps_per_epoch=train_generator.n // train_generator.batch_size, validation_steps=val_generator.n//val_generator.batch_size, callbacks=[checkpoint_loss, checkpoint_acc, early_stopping], 
@@ -139,7 +143,7 @@ with open(args["evaluation_result"], 'a') as f:
 
 
 # Evaluate on best models:
-model_loss = load_model(args["checkpoint_path"] + 'best_loss.h5')
+model_loss = load_model(args["checkpoint_path"] + 'best_loss.h5', custom_objects={'relu6': relu6})
 predictions = model_loss.predict(testX, batch_size=BS)
 predicted_class_indices = np.argmax(predictions, axis=1)
 print("best loss model:")
@@ -150,7 +154,7 @@ with open(args["evaluation_result"], 'a') as f:
     print(classification_report(testY.argmax(axis=1),
         predictions.argmax(axis=1), target_names=["fake", "real"]), file=f)
 
-model_acc = load_model(args["checkpoint_path"] + 'best_acc.h5')
+model_acc = load_model(args["checkpoint_path"] + 'best_acc.h5', custom_objects={'relu6': relu6})
 predictions = model_acc.predict(testX, batch_size=BS)
 predicted_class_indices = np.argmax(predictions, axis=1)
 print("best acc model:")

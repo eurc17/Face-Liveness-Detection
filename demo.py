@@ -13,6 +13,10 @@ from scipy.spatial import distance as dist
 import glob
 x = 0
 from utils.colors import bcolors
+from keras import backend
+
+def relu6(x):
+    return backend.relu(x, max_value=6)
 
 
 # construct argument parse and parse the arguments
@@ -31,8 +35,8 @@ ap.add_argument("-v", "--video_file", type=str, default="0",
          help="path to video_file")
 ap.add_argument("-f", "--frame_rate", type=int, default=30,
          help="frame rate of the input video")
-ap.add_argument("-w", "--input_img_width", type=int, default=160, help="The width of the input image.")
-ap.add_argument("-he", "--input_img_height", type=int, default=160, help="The height of the input image.")
+ap.add_argument("-w", "--input_img_width", type=int, default=224, help="The width of the input image.")
+ap.add_argument("-he", "--input_img_height", type=int, default=224, help="The height of the input image.")
 ap.add_argument("-ens", "--ensemble_flag", type=bool, default=False, help="To use ensemble of models or not. If set to True, ensure to provide path to all models (including model provided in -m flag) to perform ensemble")
 ap.add_argument("-ensp", "--ensemble_path", type=str, default="", help="The path to directory storing all models for ensemble usage.")
 args = vars(ap.parse_args())
@@ -53,13 +57,13 @@ net = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 # loading the liveness detecting module that was trained in the training python script
 print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " loading the liveness detector")
 if args["ensemble_flag"] == False:
-    model = load_model(args["model"])
+    model = load_model(args["model"], custom_objects={'relu6': relu6})
 else:
     if os.path.exists(args["ensemble_path"]):
         models = []
         for model_path in glob.glob(args["ensemble_path"]):
             print(model_path)
-            model = load_model(model_path)
+            model = load_model(model_path, custom_objects={'relu6': relu6})
             models.append(model)
     else:
         print(bcolors.FAIL + "[Error]" + bcolors.ENDC + " Path to ensemble models are INVALID!")
