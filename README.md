@@ -1,6 +1,6 @@
 # Face Liveness Detection+
 
-Note: This is a forked version of the [code](https://github.com/sakethbachu/Face-Liveness-Detection).
+Note: This is a work developed based on the [code](https://github.com/sakethbachu/Face-Liveness-Detection).
 
 ---
 ## Description
@@ -98,8 +98,6 @@ Optional Arguments:
   -ckpt CHECKPOINT_PATH, --checkpoint_path CHECKPOINT_PATH
                         path to save intermediate model checkpoints.
 ```
-
-
 
 
 
@@ -218,7 +216,6 @@ Optional Arguments:
 1. Gathering data having a larger set of ethnicity and different types of fake/spoofed photos.
 2. Update code to use Tensorflow 2.0 as backend.
 
-## Reference
+## References
 
 [Shape Detector Github Link](https://github.com/davisking/dlib-models)
-
