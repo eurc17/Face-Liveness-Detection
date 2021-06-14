@@ -198,7 +198,7 @@ Optional Arguments:
      -he INPUT_IMG_HEIGHT, --input_img_height INPUT_IMG_HEIGHT
                            The height of the input image.
      -ens ENSEMBLE_FLAG, --ensemble_flag ENSEMBLE_FLAG
-                           To use ensemble of models or not. If set to True,
+                           To use ensemble of models or not. If set,
                            ensure to provide path to all models (including model
                            provided in -m flag) to perform ensemble
      -ensp ENSEMBLE_PATH, --ensemble_path ENSEMBLE_PATH
