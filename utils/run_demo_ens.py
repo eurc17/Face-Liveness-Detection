@@ -45,5 +45,5 @@ for video_path in sorted(glob.glob(input_video_dir+"/*")):
     out_video_name = "result_ensemble_"+video_name+"_thresh_"+str(args["face_thresh"])+".mp4"
     out_video_path = out_video_dir+"/"+out_video_name
     print(bcolors.OKGREEN + "[INFO]" + bcolors.ENDC + " Running ensembled model on "+video_base_name)
-    os.system("python3 ../demo.py -m ./ -d ../ -c "+str(confidence)+" -p ../shape_predictor_68_face_landmarks.dat -o "+out_video_path+" -v "+video_path+" -f "+str(args["frame_rate"])+" -ens True -ensp "+model_dir +" -t "+str(args["face_thresh"]))
+    os.system("python3 ../demo.py -m ./ -d ../ -c "+str(confidence)+" -p ../shape_predictor_68_face_landmarks.dat -o "+out_video_path+" -v "+video_path+" -f "+str(args["frame_rate"])+" -ens -ensp "+model_dir +" -t "+str(args["face_thresh"]))
         
